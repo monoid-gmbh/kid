@@ -1,0 +1,66 @@
+{
+    "product_name": "Discount Certificate"
+  , "issuer": {
+     "issuer_name": "Issuer"
+   ,  "issuer_web": "https://test.bank"
+   , "crm": 1
+   , "address": {
+       "web": "http://issuer.com"
+     , "phone": "012345678"
+     , "street": "Teststrasse"
+     , "number": 1
+     , "po": "8000"
+     , "city": "Zurich"
+     , "country": "Switzerland"
+    }
+  }
+  , "manufacturer": "Manufacturer"
+  , "product_category": "Cat3"
+  , "product_currency": "CHF"
+  , "product_type": {
+      "tag": "SampleContract2",
+      "barrier": 0.8,
+      "strike": 1.0,
+      "denomination": 1000.0,
+      "coupon": 0.05
+  }
+  , "instrument_id": [{ 
+          "tag": "QuandlId"
+        , "database_code": "SIX"
+        , "dataset_code": "CH0008742519CHF"
+        , "dataset_field": "Price"
+  }]
+  , "underlyings" : [
+      {"underlying_name": "Swisscom", "underlying_instrument_id": {
+          "tag": "QuandlId"
+        , "database_code": "SIX"
+        , "dataset_code": "CH0008742519CHF"
+        , "dataset_field": "Price"
+        }
+        , "weight": 1
+      },
+      {"underlying_name": "Swisscom", "underlying_instrument_id": {
+          "tag": "QuandlId"
+        , "database_code": "SIX"
+        , "dataset_code": "CH0008742519CHF"
+        , "dataset_field": "Price"
+        }
+        , "weight": 1
+      },
+      {"underlying_name": "Swisscom", "underlying_instrument_id": {
+          "tag": "QuandlId"
+        , "database_code": "SIX"
+        , "dataset_code": "CH0008742519CHF"
+        , "dataset_field": "Price"
+        }
+        , "weight": 1
+      }
+  ]
+  , "issue_date" : "2018-11-23"
+  , "redemption_date" : "2019-11-23"
+  , "costs" : {
+      "entry": 0.02,
+      "exit": 0.0,
+      "standard_investment_amount": 10000
+  }
+}

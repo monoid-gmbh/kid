@@ -1,0 +1,4 @@
+source-repository-package
+    type: git
+    location: https://github.com/yveshauser/quandl-api-v3.git
+    tag: 7e65fd7fe22890e12fa85f65d660f819f0e46084

@@ -1,0 +1,77 @@
+name:                kid
+version:             0.1.0.0
+description:         See README.md
+homepage:            https://github.com/monoid-gmbh/kid#readme
+license:             MIT
+license-file:        LICENSE
+author:              Yves Hauser
+maintainer:          yves.hauser@gmail.com
+copyright:           2021 Monoid GmbH
+category:            Regulation
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src/hs
+  c-sources:           src/fut/Calculation.c
+  exposed-modules:     KID.Calculation
+                     , KID.Calculation.Futhark
+                     , KID.Document
+                     , KID.Domain
+  build-depends:       base >= 4.7 && < 5
+                     , ad
+                     , aeson
+                     , array
+                     , bytestring
+                     , lens
+                     , mtl
+                     , process
+                     , HaTeX
+                     , quandl-api-v3
+                     , statistics >= 0.15.0.0
+                     , text
+                     , template-haskell
+                     , transformers
+                     , time
+                     , vector
+  default-language:    Haskell2010
+
+executable kid-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  other-modules:       MimeTypes
+                     , Server
+  build-depends:       base
+                     , aeson
+                     , bytestring
+                     , cmdargs
+                     , http-client
+                     , http-client-tls
+                     , http-media
+                     , kid
+                     , mtl
+                     , servant
+                     , servant-server
+                     , text
+                     , time
+                     , wai
+                     , warp
+  default-language:    Haskell2010
+
+test-suite kid-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , aeson
+                     , HaTeX
+                     , kid
+                     , time
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/monoid-gmbh/kid
