@@ -37,6 +37,18 @@ The documents are generated using LaTeX that are then compiled to a PDF document
 
 ### Compile
 
+#### Futhark
+
+The dependency to [kid-annexes](https://github.com/monoid-gmbh/kid-annexes) needs to be established as follows:
+
+```
+$ cd src/fut
+$ make pkgs
+$ make
+```
+
+#### Haskell
+
 ```
 $ cabal build
 ```
