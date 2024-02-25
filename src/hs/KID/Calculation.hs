@@ -127,7 +127,7 @@ irr :: (Show a, Ord a, Floating a) => [(Double, Double)] -> Maybe a
 irr xs = newtonRoot 1000 0.0001 0.5 p
   where
     p :: (forall b. Floating b => b -> b)
-    p r = sum $ map (($r) . f) xs
+    p r = sum $ map (($ r) . f) xs
 
     -- TODO: isn't this somehow possible with RankNTypes...?
     f :: (Floating a, Real b) => (b, b) -> a -> a
