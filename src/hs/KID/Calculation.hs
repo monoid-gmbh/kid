@@ -18,7 +18,9 @@ module KID.Calculation (
   ) where
 
 import           Control.Arrow
+import           Control.Monad             (join)
 import           Control.Monad.Except
+import           Control.Monad.IO.Class    (liftIO)
 import qualified Data.Array.Storable   as S
 import           Data.Maybe
 import           Data.Quandl

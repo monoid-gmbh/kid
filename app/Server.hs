@@ -8,7 +8,8 @@ module Server (
     start
   ) where
 
-import           Control.Monad.Except       (ExceptT, liftIO, withExceptT)
+import           Control.Monad.Except       (ExceptT, withExceptT)
+import           Control.Monad.IO.Class     (liftIO)
 import           Data.ByteString.Lazy.Char8 as BL (ByteString (..), pack)
 import           Data.Maybe                 (fromMaybe)
 import           KID.Calculation            (CalculationCtx (..), calculateRisk, ptr_futhark_new)

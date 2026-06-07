@@ -10,6 +10,7 @@ cabal-dev
 *.c
 *.h
 *.pkg
+src/fut/Calculation.json
 .hpc
 .hsenv
 *.prof
@@ -18,4 +19,9 @@ cabal-dev
 *.eventlog
 .stack-work/
 .HTF/
+src/fut/lib
 src-fut/lib/*
+
+# Nix
+result
+result-*

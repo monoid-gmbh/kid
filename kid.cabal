@@ -8,9 +8,19 @@ author:              Yves Hauser
 maintainer:          yves.hauser@gmail.com
 copyright:           2021 Monoid GmbH
 category:            Regulation
-build-type:          Simple
+build-type:          Custom
 extra-source-files:  README.md
-cabal-version:       >=1.10
+                     src/fut/Calculation.fut
+                     src/fut/Payoff.fut
+cabal-version:       2.0
+
+-- Dependencies for the custom Setup.hs, which generates src/fut/Calculation.c
+-- from the Futhark sources before the library is built.
+custom-setup
+  setup-depends:     base
+                   , Cabal
+                   , directory
+                   , process
 
 library
   hs-source-dirs:      src/hs
