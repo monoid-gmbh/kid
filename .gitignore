@@ -22,6 +22,15 @@ src/fut/Calculation.json
 src/fut/lib
 src-fut/lib/*
 
+# Generated KID document artifacts (written to CWD by the server)
+/kid.tex
+/kid.pdf
+/kid.log
+/kid.out
+
 # Nix
 result
 result-*
+
+# Local Claude Code harness state
+.claude/

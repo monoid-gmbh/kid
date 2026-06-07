@@ -14,9 +14,14 @@
         hpkgs = pkgs.haskellPackages;
 
         # LaTeX toolchain used at runtime to compile the generated documents to PDF.
-        # scheme-medium covers the common packages; widen if document generation
-        # reports missing .sty files.
-        texEnv = pkgs.texlive.combined.scheme-medium;
+        # scheme-medium plus the extra packages the KID template pulls in
+        # (multirow also provides bigstrut; pgf provides tikz). If document
+        # generation reports a missing .sty, add the owning package here.
+        texEnv = pkgs.texlive.combine {
+          inherit (pkgs.texlive)
+            scheme-medium
+            multirow pgf fancyhdr geometry hyperref;
+        };
 
         # Custom Haskell dependency, pinned exactly as in cabal.project's
         # source-repository-package stanza.

@@ -55,7 +55,7 @@ $ cabal build
 
 ### Run the application server
 
-The application server is started as follows. Optinally provide the Quandl API key on the command-line:
+The application server is started as follows. Optionally provide the Quandl API key on the command-line:
 
 ```
 $ cabal run kid-exe -- -k <quandl-key>
@@ -64,5 +64,49 @@ $ cabal run kid-exe -- -k <quandl-key>
 Sample request:
 
 ```
-$ curl -X POST --data '@test/example/contract.json' -H 'Accept: application/pdf' -H 'Content-type: application/json' -o kid.pdf http://localhost:8081/kid?lang=EN
+$ curl -f -X POST --data '@test/example/contract.json' -H 'Accept: application/pdf' -H 'Content-type: application/json' -o kid.pdf http://localhost:8081/kid?lang=EN
 ```
+
+> **Note:** pass `curl -f` (`--fail`). On an error the server responds with HTTP
+> 400 and a plain-text message describing what went wrong (also logged to the
+> server's stderr). Without `-f`, `curl -o kid.pdf` would happily save that
+> error text into `kid.pdf`, producing what looks like an empty/corrupt PDF.
+
+### Historical-data backend
+
+The source of historical data is pluggable, selected with `--backend`:
+
+```
+$ cabal run kid-exe -- --backend quandl -k <quandl-key>   # default
+$ cabal run kid-exe -- --backend file
+```
+
+* `quandl` — fetches from the Quandl API. Underlyings use `QuandlId` instrument ids.
+* `file` — reads from local CSV files. Underlyings use `FileId` instrument ids,
+  each naming a CSV file and the value column to read:
+
+  ```json
+  "underlying_instrument_id": {
+    "tag": "FileId",
+    "file_path": "test/example/data/underlying.csv",
+    "file_column": "Price"
+  }
+  ```
+
+  The CSV has a header row whose first column is an ISO date (`YYYY-MM-DD`)
+  followed by named value columns; rows outside the historical window are
+  ignored:
+
+  ```
+  Date,Price
+  2013-11-01,100.00
+  2013-11-04,100.31
+  ```
+
+  A runnable example is provided — `test/example/contract-file.json` together
+  with `test/example/data/underlying.csv`:
+
+  ```
+  $ cabal run kid-exe -- --backend file
+  $ curl -f -X POST --data '@test/example/contract-file.json' -H 'Accept: application/pdf' -H 'Content-type: application/json' -o kid.pdf http://localhost:8081/kid?lang=EN
+  ```

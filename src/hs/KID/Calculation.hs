@@ -17,22 +17,19 @@ module KID.Calculation (
   , ptr_futhark_new
   ) where
 
-import           Control.Arrow
-import           Control.Monad             (join)
 import           Control.Monad.Except
 import           Control.Monad.IO.Class    (liftIO)
-import qualified Data.Array.Storable   as S
 import           Data.Maybe
-import           Data.Quandl
 import           Data.Time.Calendar
 import           KID.Calculation.Futhark   (futhark_contract, ptr_futhark_new, Ptr_Futhark(..))
+import           KID.Data                  (DataSource, DateRange(..), loadArray)
 import           KID.Domain
 import           Numeric.AD                (diff)
 import           Numeric.Natural           (Natural)
 
 -- | Calculation Context
 data CalculationCtx = CalculationCtx {
-    quandl_key  :: Maybe String
+    data_source :: DataSource   -- ^ pluggable historical-data backend
   , ptr_futhark :: Ptr_Futhark
 }
 
@@ -44,7 +41,7 @@ calculateRisk :: CalculationCtx
 calculateRisk CalculationCtx{..} c@Contract{..} =
          let t = diffDays redemption_date issue_date   -- recommended holding period in days
              d = addGregorianYearsClip (-5) issue_date -- 5 years of historical data (Annex I, 9)
-          in measure t <$> (load_array quandl_key issue_date d underlyings
+          in measure t <$> (loadArray data_source (DateRange d issue_date) underlyings
              >>= liftIO . futhark_contract product_type ptr_futhark t c)
 
 -- | measure
@@ -147,36 +144,3 @@ reduction_in_yield Costs{..} t m = let
   i = irr [(0, -standard_investment_amount+entry), (t, standard_investment_amount*m)]
   r = irr [(0, -standard_investment_amount)      , (t, standard_investment_amount*m)]
   in fromMaybe 0.0 $ (-) <$> i <*> r
-
--- Data Loading
-
--- | Loading data for the given underlyings
-load_array :: Maybe String
-           -> Day
-           -> Day
-           -> [Underlying]
-           -> ExceptT String IO (S.StorableArray (Int,Day) Double)
-load_array k d f u = let
-  p = map (param k . underlying_instrument_id) u in load_array_quandl p
-  where
-    param k (QuandlId x y z) = (Parameter x y Nothing Nothing (Just f) (Just d) Nothing Nothing Nothing k,z)
-
--- | Loading data from quandl for the given parameters
-load_array_quandl :: [(Parameter, String)]
-                  -> ExceptT String IO (S.StorableArray (Int,Day) Double)
-load_array_quandl t = let e = uncurry load . unzip $ t in withExceptT show e -- TODO: exception handling
-  where
-    load p s = ExceptT (quandlLoads p) >>= liftIO . build s
-
-    -- weekends are set as nan
-    build :: [String] -> [QuandlResponse] -> IO (S.StorableArray (Int,Day) Double)
-    build s r =
-      let z = zipWith select_field s r :: [[(Day, Double)]]
-          d = (map fst . join) z
-       in do
-         arr <- S.newArray ((1, minimum d), (length r, maximum d)) nan
-         mapM_ (\(x,l) -> mapM_ (\(y,z) -> S.writeArray arr (x,y) z) l) $ zip [1..] z
-         return arr
-
-    nan :: Double
-    nan = 0/0

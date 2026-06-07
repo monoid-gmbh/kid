@@ -27,6 +27,9 @@ library
   c-sources:           src/fut/Calculation.c
   exposed-modules:     KID.Calculation
                      , KID.Calculation.Futhark
+                     , KID.Data
+                     , KID.Data.File
+                     , KID.Data.Quandl
                      , KID.Document
                      , KID.Domain
   build-depends:       base >= 4.7 && < 5

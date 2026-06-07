@@ -57,6 +57,12 @@ data InstrumentId =
   , dataset_code  :: String
   , dataset_field :: String
   } |
+  -- | Historical data read from a local CSV file. 'file_path' points to the
+  -- CSV, 'file_column' selects which value column to read (see "KID.Data.File").
+  FileId {
+    file_path   :: FilePath
+  , file_column :: String
+  } |
   DummyData
   deriving (Show)
 

@@ -11,9 +11,12 @@ module KID.Document (
   , Language(..)
   ) where
 
+import           Control.Monad.Except         (ExceptT, throwError)
+import           Control.Monad.IO.Class       (liftIO)
 import qualified Data.ByteString.Lazy.Char8   as BS
 import           Data.Either
 import           KID.Domain
+import           System.Exit                  (ExitCode (..))
 import           System.Process               as P
 import           Text.LaTeX
 import           Text.LaTeX.Base.Syntax
@@ -29,10 +32,29 @@ import           Text.LaTeX.Packages.TikZ
 
 -- | Generate the document
 -- The default language is EN
-generateDocument :: Language -> (Contract, RiskSummary) -> IO BS.ByteString
-generateDocument l (c,r) = execLaTeXT (kid l (c,r)) >>= renderFile "kid.tex"
-  >> readProcess "pdflatex" ["kid.tex"] [] -- TODO: move to MimeTypes.hs
-  >> BS.readFile "kid.pdf"
+--
+-- Renders the LaTeX source and compiles it with @pdflatex@. A non-zero exit
+-- from @pdflatex@ is reported (with the relevant LaTeX log lines) through the
+-- error channel instead of escaping as an opaque IO exception.
+generateDocument :: Language -> (Contract, RiskSummary) -> ExceptT String IO BS.ByteString
+generateDocument l (c,r) = do
+  liftIO (execLaTeXT (kid l (c,r)) >>= renderFile "kid.tex") -- TODO: move to MimeTypes.hs
+  (code, out, err) <- liftIO $
+    readProcessWithExitCode "pdflatex" ["-interaction=nonstopmode", "-halt-on-error", "kid.tex"] ""
+  case code of
+    ExitSuccess     -> liftIO (BS.readFile "kid.pdf")
+    ExitFailure rc  -> throwError (latexError rc (out ++ err))
+
+-- | Build a readable error from pdflatex output: the LaTeX error lines if any
+-- (those starting with @!@), otherwise the tail of the log.
+latexError :: Int -> String -> String
+latexError rc output =
+  "pdflatex failed (exit " ++ show rc ++ "):\n" ++ detail
+  where
+    ls     = lines output
+    errs   = filter (\x -> take 1 x == "!") ls
+    detail = unlines (if null errs then lastN 20 ls else errs)
+    lastN n = reverse . take n . reverse
 
 -- | Supported languages
 data Language =
