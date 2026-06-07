@@ -15,6 +15,7 @@ module KID.Calculation (
     CalculationCtx(..)
   , calculateRisk
   , ptr_futhark_new
+  , summary_risk_indicator
   ) where
 
 import           Control.Monad.Except

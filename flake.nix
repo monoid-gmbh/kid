@@ -73,10 +73,6 @@
             # The .cabal upper bounds are loose enough for the pinned nixpkgs;
             # jailbreak guards against incidental version skew.
             pkgs.haskell.lib.doJailbreak
-            # The committed test suite (test/Spec.hs) references modules that do
-            # not exist in this WIP repo; don't block the package build on it.
-            # Tests remain runnable via `cabal test` in the dev shell.
-            pkgs.haskell.lib.dontCheck
             (drv: drv.overrideAttrs (old: {
               nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [
                 pkgs.futhark
