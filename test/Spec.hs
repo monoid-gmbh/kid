@@ -152,9 +152,11 @@ jsonSpec = describe "KID.Domain JSON" $ do
 --------------------------------------------------------------------------------
 
 -- | Run the file backend for a single underlying with the given instrument id.
+-- The backend returns one series per underlying; with a single underlying
+-- 'concat' flattens that to just its series (and is total, unlike 'head').
 fetchOne :: DateRange -> InstrumentId -> IO (Either String TimeSeries)
 fetchOne range iid =
-  fmap (fmap head) . runExceptT $
+  fmap (fmap concat) . runExceptT $
     fetchSeries fileSource range [Underlying "u" iid 1.0]
 
 -- | A date range wide enough to include every test observation.
